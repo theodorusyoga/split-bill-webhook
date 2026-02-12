@@ -1,3 +1,13 @@
 [build]
 command = "pip install -r requirements.txt"
 functions = "netlify/functions"
+
+[[redirects]]
+from = "/webhook"
+to = "/.netlify/functions/webhook"
+status = 200
+
+[[redirects]]
+from = "/health"
+to = "/.netlify/functions/health"
+status = 200
