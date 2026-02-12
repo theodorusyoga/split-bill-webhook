@@ -2,43 +2,55 @@
 
 Telegram webhook → Vellum.ai workflow for splitting bills via chat.
 
-## Setup
+Deployed as **Netlify Functions** (serverless).
+
+## Local Development
 
 ```bash
 # Install dependencies
 pip install -r requirements.txt
 
-# Run locally
+# Run with FastAPI (local only)
 uvicorn main:app --reload --port 8000
 ```
 
-## Expose to Telegram (for local dev)
+## Deployment to Netlify
 
-Use ngrok or similar:
+1. Push to GitHub
+2. Connect repo to Netlify
+3. Set environment variables in Netlify dashboard:
+   - `TELEGRAM_BOT_TOKEN`
+   - `VELLUM_API_KEY`
+   - `VELLUM_WORKFLOW_NAME`
 
-```bash
-ngrok http 8000
-```
+4. Netlify auto-deploys from `netlify/functions/`
 
-Then set the webhook:
+## Endpoints
+
+| Method | Path                    | Description              |
+|--------|-------------------------|--------------------------|
+| POST   | `/.netlify/functions/webhook` | Telegram webhook handler |
+| GET    | `/.netlify/functions/health`  | Health check             |
+
+## Set Telegram Webhook
+
+After deployment, set the webhook to your Netlify URL:
 
 ```bash
 curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook" \
   -H "Content-Type: application/json" \
-  -d '{"url": "https://YOUR_NGROK_URL/webhook"}'
+  -d '{"url": "https://YOUR_NETLIFY_DOMAIN/.netlify/functions/webhook"}'
 ```
 
-## Endpoints
+## Project Structure
 
-| Method | Path       | Description              |
-|--------|------------|--------------------------|
-| POST   | `/webhook` | Telegram webhook handler |
-| GET    | `/health`  | Health check             |
-
-## Environment Variables
-
-| Variable              | Description                    |
-|-----------------------|--------------------------------|
-| `TELEGRAM_BOT_TOKEN`  | Telegram Bot API token         |
-| `VELLUM_API_KEY`      | Vellum.ai API key              |
-| `VELLUM_WORKFLOW_NAME` | Vellum workflow deployment name |
+```
+.
+├── netlify/functions/
+│   ├── webhook.py    # Telegram webhook handler
+│   └── health.py     # Health check
+├── main.py           # FastAPI version (local dev only)
+├── netlify.toml      # Netlify config
+├── requirements.txt  # Dependencies
+└── .env              # Environment variables (not committed)
+```
