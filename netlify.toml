@@ -2,6 +2,3 @@
 command = "pip install -r requirements.txt"
 functions = "netlify/functions"
 publish = "public"
-
-[functions]
-python_version = "3.10"
